@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Net.Sockets;
 using NetArena.Shared.Messages;
+using NetArena.Shared.Network;
 
 const int Port = 7777;
 
@@ -28,9 +29,9 @@ while (true)
         Data = "Welcome to NetArena!"
     };
 
-    byte[] data = NetworkMessageSerializer.Serialize(welcomeMessage);
-
-    await stream.WriteAsync(data);
+    await NetworkMessageFraming.SendAsync(
+        stream,
+        welcomeMessage);
 
     Console.WriteLine("Welcome message sent.");
 

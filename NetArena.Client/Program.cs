@@ -1,5 +1,6 @@
 ﻿using System.Net.Sockets;
 using NetArena.Shared.Messages;
+using NetArena.Shared.Network;
 
 const string Host = "127.0.0.1";
 const int Port = 7777;
@@ -17,13 +18,7 @@ Console.WriteLine("Connected to server!");
 
 using NetworkStream stream = client.GetStream();
 
-byte[] buffer = new byte[4096];
-
-int bytesRead = await stream.ReadAsync(buffer);
-
-byte[] messageData = buffer[..bytesRead];
-
-NetworkMessage? message = NetworkMessageSerializer.Deserialize(messageData);
+NetworkMessage? message = await NetworkMessageFraming.ReceiveAsync(stream);
 
 if (message is not null)
 {
@@ -32,5 +27,5 @@ if (message is not null)
 }
 else
 {
-    Console.WriteLine("Failed to deserialize server message.");
+    Console.WriteLine("Server closed the connection without sending a message.");
 }
