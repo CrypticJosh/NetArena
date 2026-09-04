@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="NetArena.Client/NetArena.Client.csproj" />
+  <Project Path="NetArena.Shared/NetArena.Shared.csproj" />
+</Solution>
