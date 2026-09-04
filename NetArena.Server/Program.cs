@@ -21,19 +21,51 @@ while (true)
 
     Console.WriteLine($"Client connected: {client.Client.RemoteEndPoint}");
 
-    using NetworkStream stream = client.GetStream();
+    _ = HandleClientAsync(client);
+}
 
-    NetworkMessage welcomeMessage = new()
+static async Task HandleClientAsync(TcpClient client)
+{
+    using (client)
     {
-        Type = MessageType.Welcome,
-        Data = "Welcome to NetArena!"
-    };
+        try
+        {
+            using NetworkStream stream = client.GetStream();
 
-    await NetworkMessageFraming.SendAsync(
-        stream,
-        welcomeMessage);
+            NetworkMessage welcomeMessage = new()
+            {
+                Type = MessageType.Welcome,
+                Data = "Welcome to NetArena!"
+            };
 
-    Console.WriteLine("Welcome message sent.");
+            await NetworkMessageFraming.SendAsync(
+                stream,
+                welcomeMessage);
 
-    client.Close();
+            Console.WriteLine("Welcome message sent.");
+
+            while (true)
+            {
+                NetworkMessage? message =
+                    await NetworkMessageFraming.ReceiveAsync(stream);
+
+                if (message is null)
+                {
+                    Console.WriteLine("Client disconnected.");
+                    break;
+                }
+
+                Console.WriteLine(
+                    $"Received message: {message.Type}");
+
+                Console.WriteLine(
+                    $"Data: {message.Data}");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(
+                $"Client connection error: {ex.Message}");
+        }
+    }
 }

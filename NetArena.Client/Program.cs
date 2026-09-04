@@ -18,14 +18,17 @@ Console.WriteLine("Connected to server!");
 
 using NetworkStream stream = client.GetStream();
 
-NetworkMessage? message = await NetworkMessageFraming.ReceiveAsync(stream);
+NetworkMessage? message =
+    await NetworkMessageFraming.ReceiveAsync(stream);
 
 if (message is not null)
 {
     Console.WriteLine($"Received message: {message.Type}");
     Console.WriteLine($"Data: {message.Data}");
 }
-else
-{
-    Console.WriteLine("Server closed the connection without sending a message.");
-}
+
+Console.WriteLine();
+Console.WriteLine("Connection is still open.");
+Console.WriteLine("Press ENTER to disconnect.");
+
+Console.ReadLine();
